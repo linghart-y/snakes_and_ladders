@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Vue</title>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <button @click="start">Start</button>
+
+    <ul v-if="dice_rolls.length">
+        <li v-for="roll in dice_rolls">
+            {{roll}}
+        </li>
+    </ul>
+
+</div>
+
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            dice_rolls: [],
+            current: 1,
+        },
+        methods: {
+            getRoll(){
+                let app = this;
+                let data = {'current': this.current};
+                axios
+                    .post(window.location.href, data)
+                    .then(function (response) {
+                        console.log('response', response);
+                        app.current = response.data.current;
+                        app.dice_rolls.push(response.data.result);
+                    });
+                return true;
+            },
+            start(){
+                let app = this;
+                let timer = setInterval(function(){
+                    if(app.current === 100) clearInterval(timer);
+                    else app.getRoll();
+                }, 1000);
+            }
+        }
+    })
+</script>
+</body>
+</html>
